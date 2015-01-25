@@ -24,7 +24,7 @@ var Game = function(params) {
     var grid = [];
     for(var x=0; x<this.gridWidth; x++) {
       var row = [];
-      for(var y=0; y<this.gridHeight; y++) { row.push([OPEN_TILE]); }
+      for(var y=0; y<this.gridHeight; y++) { row.push(OPEN_TILE); }
       grid.push(row);
     }
     this.graph = new Graph(grid);
