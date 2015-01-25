@@ -6,10 +6,9 @@ var Traversal = function(params) {
   this.isNotFinished = true;
 
   var goalNode = this.path[this.path.length - 1];
+  var goalCoords = nodeCoords(goalNode);
   var grid = this.game.graph.grid;
   var nextNodeIndex = 0;
-
-  var logged = false;
 
   this.tick = function(tickAmount) {
     var distanceToMove = tickAmount * this.unit.velocity;
@@ -19,7 +18,6 @@ var Traversal = function(params) {
     var distToNode = dist(nextNodeCoords, this.unit.getCoords());
 
     if (tickAmount) {
-
       if (distToNode <= distanceToMove) {
         nextNodeIndex++;
         this.unit.moveTo(nextNodeCoords);
@@ -37,10 +35,9 @@ var Traversal = function(params) {
         var vector = { dx: dx, dy: dy };
         this.unit.move(vector);
       }
-
     }
 
-    if (this.unit.gridX == goalNode.x && this.unit.gridY == goalNode.y) {
+    if (this.unit.x == goalCoords.x && this.unit.y == goalCoords.y) {
       this.isNotFinished = false;
     }
   }
@@ -52,6 +49,6 @@ var Traversal = function(params) {
   }
 
   function dist(p1, p2) {
-    return Math.sqrt(Math.pow(p1.x - p2.x, 2), Math.pow(p1.y - p2.y, 2));
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
   }
 };
