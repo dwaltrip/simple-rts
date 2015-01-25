@@ -13,16 +13,28 @@
   <script type="text/javascript" src="draw.js"></script>
   <script type="text/javascript" src="util.js"></script>
 
+  <script type="text/javascript" src="traversal.js"></script>
   <script type="text/javascript" src="unit.js"></script>
   <script type="text/javascript" src="player.js"></script>
 
   <script type="text/javascript" src="astar.js"></script>
   <script type="text/javascript" src="game.js"></script>
   <script>
+    var game;
     document.addEventListener("DOMContentLoaded", function() {
-      var canvas = document.getElementById("game-canvas"),
-          game = new Game({ canvas: canvas });
+      var canvas = document.getElementById("game-canvas");
+
+      game = new Game({ canvas: canvas });
       canvas.addEventListener("mousedown", function(event) { game.mouseDown.call(game, event); }, false);
+
+      var unit = game.player1.units[0];
+      var startNode = game.graph.grid[unit.gridX][unit.gridY];
+      //var goalNode = game.graph.grid[game.graph.grid.length - 1][0];
+      var goalNode = game.graph.grid[0][game.graph.grid[0].length - 1];
+      var path = astar.search(game.graph, startNode, goalNode);
+
+      var traversal = new Traversal({ game: game, unit: unit, path: path });
+      game.traversals.push(traversal);
 
       game.run();
     });

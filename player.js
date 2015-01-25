@@ -10,8 +10,9 @@ var Player = (function() {
       var UNIT_SIZE = 10;
 
       return new Unit({
-        x: randInt(0, self.game.width - UNIT_SIZE),
-        y: randInt(0, self.game.height - UNIT_SIZE),
+        game: self.game,
+        x: Math.floor(randInt(0, self.game.width - UNIT_SIZE) / self.game.tileSize) * self.game.tileSize,
+        y: Math.floor(randInt(0, self.game.height - UNIT_SIZE) / self.game.tileSize) * self.game.tileSize,
         width: UNIT_SIZE,
         height: UNIT_SIZE
       });

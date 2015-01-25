@@ -1,4 +1,3 @@
-//function drawRect(ctx, coords, height, width, fillStyle, strokeStyle) {
 function drawRect(ctx, x, y, width, height, fillStyle, strokeStyle) {
   var prevFillStyle = ctx.fillStyle;
   var prevStrokeStyle = ctx.strokeStyle;
