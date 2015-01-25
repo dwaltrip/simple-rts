@@ -6,8 +6,8 @@ var Game = function(params) {
       currTime, lastTime;
   var OPEN_TILE = 1;
 
-  var DEBUG_MODE_OFF = true,
-      DEBUG_SLOWDOWN_THRESHOLD = 200,
+  var DEBUG_MODE_OFF = false,
+      DEBUG_SLOWDOWN_THRESHOLD = 50,
       debug_time_counter = 0;
 
   function init(params) {
@@ -108,8 +108,9 @@ var Game = function(params) {
         drawUnit(unit);
       }
 
-      self.drawDebugOverlay(self.debugData);
-      
+      if (!DEBUG_MODE_OFF) {
+        self.drawDebugOverlay(self.debugData);
+      }
     } else {
       debug_time_counter += timeDelta;
     }

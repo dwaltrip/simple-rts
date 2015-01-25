@@ -34,10 +34,6 @@ var Unit = (function() {
       this.x = newX;
       this.y = newY;
 
-      var key =  '[' + dx + ', ' + dy + ']';
-      if (counts[key] == undefined) { counts[key] = 1; } else { counts[key] += 1; }
-      this.game.debugData['dx,dy counts'] = counts;
-
       updateGridCoords();
     }
 

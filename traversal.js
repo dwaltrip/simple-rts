@@ -6,7 +6,6 @@ var Traversal = function(params) {
   this.isNotFinished = true;
 
   var goalNode = this.path[this.path.length - 1];
-  console.log('====== goalNode -- x:', goalNode.x, '-- y:', goalNode.y);
   var grid = this.game.graph.grid;
   var nextNodeIndex = 0;
 
@@ -21,13 +20,8 @@ var Traversal = function(params) {
 
     if (tickAmount) {
 
-      var gn = this.path[this.path.length - 1];
-      console.log('-- nextNodeCoords --', JSON.stringify(nextNodeCoords));
-      console.log('-- this.unit -- gridX:', this.unit.gridX, '-- gridY:', this.unit.gridY, '-- x:', this.unit.x, '-- y:', this.unit.y);
-
       if (distToNode <= distanceToMove) {
         nextNodeIndex++;
-        console.log('-- moveTo -- coords:', JSON.stringify(nextNodeCoords));
         this.unit.moveTo(nextNodeCoords);
       } 
       else {
@@ -41,11 +35,9 @@ var Traversal = function(params) {
         dy = dy * distanceToMove;
 
         var vector = { dx: dx, dy: dy };
-        console.log('-- moveTo -- vector:', JSON.stringify(vector));
         this.unit.move(vector);
       }
 
-      console.log('====\n');
     }
 
     if (this.unit.gridX == goalNode.x && this.unit.gridY == goalNode.y) {
