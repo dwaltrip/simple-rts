@@ -1,6 +1,5 @@
 var Game = function(params) {
-  var self = this,
-      ctx;
+  var self = this;
   var UNIT_SIZE = 10;
   var timeDelta = 1,
       currTime, lastTime;
@@ -17,17 +16,19 @@ var Game = function(params) {
     this.canvas = params.canvas;
     this.context = this.canvas.getContext("2d");
 
-    this.height = 550;
-    this.width = 1100;
-
+    this.mapHeight = 550;
+    this.mapWidth = 900;
+    this.separatorWidth = 10;
+    this.sidePanelWidth = 200;
     this.borderWidth = 2;
-    this.canvasHeight = this.height + 2 * this.borderWidth;
-    this.canvasWidth = this.width + 2 * this.borderWidth;
+
+    this.canvasHeight = this.mapHeight + 2 * this.borderWidth;
+    this.canvasWidth = this.mapWidth + this.sidePanelWidth + this.separatorWidth + 2 * this.borderWidth;
 
     this.tileSize = 10;
 
-    this.gridWidth = this.width / this.tileSize;
-    this.gridHeight = this.height / this.tileSize;
+    this.gridWidth = this.mapWidth / this.tileSize;
+    this.gridHeight = this.mapHeight / this.tileSize;
     var grid = [];
     for(var x=0; x<this.gridWidth; x++) {
       var row = [];
@@ -50,10 +51,9 @@ var Game = function(params) {
 
     this.units = [];
     this.traversals = [];
+    this.selectedUnits = {};
 
     this.debugData = {};
-
-    ctx = this.context;
   };
 
   this.run = function() {
@@ -61,22 +61,28 @@ var Game = function(params) {
   };
 
   this.mouseDown = function(event) {
-    var coords = this.canvas.relMouseCoords(event);
+    var mouseCoords = this.canvas.relMouseCoords(event);
 
-    console.log('-- mouseDown -- coords:', JSON.stringify(coords));
+    _.each(this.player1.units, function(unit) {
+      var boundingRect = unit.getBoundingRect();
+      var clickIsInRect = isPointInRect(mouseCoords, boundingRect);
+      if (clickIsInRect) {
+        this.selectUnit(unit);
+      }
+    }, this);
 
-    var unit = new Unit({
-      game: this,
-      x: coords.x - (UNIT_SIZE / 2),
-      y: coords.y - (UNIT_SIZE / 2),
-      width: UNIT_SIZE,
-      height: UNIT_SIZE,
-      color: '#25F12A'
-    });
-    this.units.push(unit);
-    window.setTimeout(function() {
-      self.removeUnit(unit);
-    }, 2000);
+    // var unit = new Unit({
+    //   game: this,
+    //   x: mouseCoords.x - (UNIT_SIZE / 2),
+    //   y: mouseCoords.y - (UNIT_SIZE / 2),
+    //   width: UNIT_SIZE,
+    //   height: UNIT_SIZE,
+    //   color: '#25F12A'
+    // });
+    // this.units.push(unit);
+    // window.setTimeout(function() {
+    //   self.removeUnit(unit);
+    // }, 2000);
   };
 
   this.removeUnit = function(unitToRemove) {
@@ -90,6 +96,14 @@ var Game = function(params) {
     this.units.splice(removalIndex, 1);
   }
 
+  this.selectUnit = function(unit) {
+    for(var unitId in this.selectedUnits) {
+      delete this.selectedUnits[unitId];
+    }
+
+    this.selectedUnits[unit.id] = unit;
+  };
+
   function gameLoop() {
     requestAnimationFrame(gameLoop);
 
@@ -100,7 +114,8 @@ var Game = function(params) {
     if (DEBUG_MODE_OFF || debug_time_counter > DEBUG_SLOWDOWN_THRESHOLD) {
       debug_time_counter = 0;
 
-      drawRect(0, 0, self.canvasWidth, self.canvasHeight, "#ddd", "#555", true);
+      drawRect(0, 0, self.canvasWidth, self.canvasHeight, "#ddd", "#555", true); 
+      self.drawSidePanel();
 
       var inProgressTraversals = [];
       for(var i=0; i<self.traversals.length; i++) {
@@ -122,6 +137,11 @@ var Game = function(params) {
         drawUnit(unit);
       }
 
+      for(var unitId in self.selectedUnits) {
+        var unit = self.selectedUnits[unitId];
+        drawUnitSelection(unit);
+      }
+
       if (!DEBUG_MODE_OFF) {
         self.drawDebugOverlay(self.debugData);
       }
@@ -130,13 +150,46 @@ var Game = function(params) {
     }
   }
 
+  this.drawSidePanel = function() {
+    drawRect(self.mapWidth + self.borderWidth * 2, 0, self.separatorWidth, self.canvasHeight, "#555", "#555", true);
+    drawRect(self.canvasWidth - self.sidePanelWidth, 0, self.sidePanelWidth, self.canvasHeight, "#ddd", "#555", true);
+
+    var selectedUnit = null;
+    for(var unitId in this.selectedUnits) {
+      selectedUnit = this.selectedUnits[unitId];
+    }
+
+    var sidePanelLeft = self.canvasWidth - self.sidePanelWidth - self.borderWidth / 2;
+
+    if (selectedUnit) {
+      var lines = [
+        { text: 'Selected Unit', fontSize: 20 },
+        { text: 'Id: ' + selectedUnit.id, fontSize: 16, xOffset: 5 },
+        { text: ['Coords:', prettyCoords(selectedUnit.getCoords())].join(' '), fontSize: 16, xOffset: 5 }
+      ];
+
+      var yCoord = 15 + Math.ceil(lines[0].fontSize / 2);
+
+      _.each(lines, function(lineData) {
+        this.context.font = lineData.fontSize + 'px sans-serif';
+
+        var xOffset = lineData.xOffset || 0;
+        this.context.fillText(lineData.text, sidePanelLeft + 15 + xOffset, yCoord);
+        yCoord += lineData.fontSize;
+      }, this);
+    }
+
+    //drawRect(self.canvasWidth - self.sidePanelWidth - self.borderWidth / 2, 200, self.sidePanelWidth - self.borderWidth, 100, '#25F12A');
+  }
+
+
   this.drawDebugOverlay = function(debugData) {
     var x0 = 10,
         y0 = 10;
     var fontSize = 12;
 
     drawRect(10, 10, 150, 300, 'rgba(100, 100, 100, .8)', 'rgba(50, 50, 50, .8)');
-    ctx.font = fontSize + 'px sans-serif';
+    this.context.font = fontSize + 'px sans-serif';
 
     var yCoord = 25,
         yDelta = fontSize;
@@ -144,11 +197,11 @@ var Game = function(params) {
       var val = debugData[attr];
       if (typeof val == 'object' && val !== null) {
         for (var nestedAttr in val) {
-          ctx.fillText(nestedAttr + ': ' + JSON.stringify(val[nestedAttr]), 15, yCoord);
+          this.context.fillText(nestedAttr + ': ' + JSON.stringify(val[nestedAttr]), 15, yCoord);
           yCoord += yDelta;
         }
       } else {
-        ctx.fillText(attr + ': ' + JSON.stringify(debugData[attr]), 15, yCoord);
+        this.context.fillText(attr + ': ' + JSON.stringify(debugData[attr]), 15, yCoord);
         yCoord += yDelta;
       }
     }
@@ -161,6 +214,15 @@ var Game = function(params) {
 
   function drawUnit(unit) {
     drawRect(unit.x, unit.y, unit.width, unit.height, unit.color, darkenColor(unit.color, 0.2));
+  }
+
+  function drawUnitSelection(unit) {
+    var selectorSize = 4;
+    var xOffset = Math.floor((unit.width - selectorSize) / 2);
+    var yOffset = Math.floor((unit.height - selectorSize) / 2);
+
+    var selectorColor = '#25F12A';
+    drawRect(unit.x + xOffset, unit.y + yOffset, selectorSize, selectorSize, selectorColor, darkenColor(selectorColor, 0.1));
   }
 
   function drawRect() {

@@ -1,4 +1,3 @@
-
 var Display = function(params) {
   this.xOffset = params.xOffset || 0;
   this.yOffset = params.yOffset || 0;
@@ -17,10 +16,14 @@ var Display = function(params) {
 
     if (useOffset) {
       ctx.fillRect(x + this.xOffset, y + this.yOffset, width, height);
-      ctx.strokeRect(x + this.xOffset, y + this.yOffset, width, height);
+      if (strokeStyle) {
+        ctx.strokeRect(x + this.xOffset, y + this.yOffset, width, height);
+      }
     } else {
       ctx.fillRect(x, y, width, height);
-      ctx.strokeRect(x, y, width, height);
+      if (strokeStyle) {
+        ctx.strokeRect(x, y, width, height);
+      }
     }
 
     if (fillStyle) { ctx.fillStyle = prevFillStyle; }

@@ -10,6 +10,8 @@
   </section>
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+  <script type="text/javascript" src="lib/lodash-2.4.1.js"></script>
+
   <script type="text/javascript" src="draw.js"></script>
   <script type="text/javascript" src="util.js"></script>
 
@@ -31,7 +33,8 @@
       var unit = game.player1.units[0];
       var startNode = game.graph.grid[unit.gridX][unit.gridY];
       //var goalNode = game.graph.grid[game.graph.grid.length - 1][0];
-      var goalNode = game.graph.grid[0][game.graph.grid[0].length - 1];
+      //var goalNode = game.graph.grid[0][game.graph.grid[0].length - 1];
+      var goalNode = game.graph.grid[game.graph.grid.length - 1][game.graph.grid[0].length - 1];
       var path = astar.search(game.graph, startNode, goalNode);
 
       var traversal = new Traversal({ game: game, unit: unit, path: path });

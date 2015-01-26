@@ -6,7 +6,7 @@ var Unit = (function() {
     return unitCount;
   };
 
-  var VELOCITY = 0.05;
+  var VELOCITY = 0.15;
 
   return function(params) {
     var params = params || {};
@@ -44,6 +44,10 @@ var Unit = (function() {
 
     this.getCoords = function() {
       return { x: this.x, y: this.y };
+    };
+
+    this.getBoundingRect = function() {
+      return { x: this.x, y: this.y, width: this.width, height: this.height };
     };
 
     function updateGridCoords() {
