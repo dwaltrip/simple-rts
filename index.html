@@ -31,16 +31,6 @@
       canvas.addEventListener('mousedown', function(event) { game.onMouseDown.call(game, event); }, false);
       canvas.addEventListener('contextmenu', function(event) { event.preventDefault(); game.onRightClick(event); return false; }, false);
 
-      // var unit = game.player1.units[0];
-      // var startNode = game.graph.grid[unit.gridX][unit.gridY];
-      // //var goalNode = game.graph.grid[game.graph.grid.length - 1][0];
-      // //var goalNode = game.graph.grid[0][game.graph.grid[0].length - 1];
-      // var goalNode = game.graph.grid[game.graph.grid.length - 1][game.graph.grid[0].length - 1];
-      // var path = astar.search(game.graph, startNode, goalNode);
-
-      // var traversal = new Traversal({ game: game, unit: unit, path: path });
-      // game.traversals.push(traversal);
-
       game.run();
     });
   </script>
