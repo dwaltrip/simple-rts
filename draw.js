@@ -1,16 +1,32 @@
-function drawRect(ctx, x, y, width, height, fillStyle, strokeStyle) {
-  var prevFillStyle = ctx.fillStyle;
-  var prevStrokeStyle = ctx.strokeStyle;
 
-  if (fillStyle) { ctx.fillStyle = fillStyle; }
-  if (strokeStyle) { ctx.strokeStyle = strokeStyle; }
+var Display = function(params) {
+  this.xOffset = params.xOffset || 0;
+  this.yOffset = params.yOffset || 0;
 
-  ctx.fillRect(x, y, width, height);
-  ctx.strokeRect(x, y, width, height);
+  var canvas = params.canvas;
+  var ctx = params.context;
 
-  if (fillStyle) { ctx.fillStyle = prevFillStyle; }
-  if (strokeStyle) { ctx.strokeStyle = prevStrokeStyle; }
-};
+  this.drawRect = function(x, y, width, height, fillStyle, strokeStyle, noOffset) {
+    var prevFillStyle = ctx.fillStyle;
+    var prevStrokeStyle = ctx.strokeStyle;
+
+    var useOffset = !noOffset;
+
+    if (fillStyle) { ctx.fillStyle = fillStyle; }
+    if (strokeStyle) { ctx.strokeStyle = strokeStyle; }
+
+    if (useOffset) {
+      ctx.fillRect(x + this.xOffset, y + this.yOffset, width, height);
+      ctx.strokeRect(x + this.xOffset, y + this.yOffset, width, height);
+    } else {
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeRect(x, y, width, height);
+    }
+
+    if (fillStyle) { ctx.fillStyle = prevFillStyle; }
+    if (strokeStyle) { ctx.strokeStyle = prevStrokeStyle; }
+  };
+}
 
 function darkenColor(color, percent) {
   return lightenColor(color, -1 * percent);

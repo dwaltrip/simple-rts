@@ -8,6 +8,7 @@ var Game = function(params) {
 
   var DEBUG_MODE_OFF = true;
   //var DEBUG_MODE_OFF = false;
+
   var DEBUG_SLOWDOWN_THRESHOLD = 50,
       debug_time_counter = 0;
 
@@ -16,8 +17,13 @@ var Game = function(params) {
     this.canvas = params.canvas;
     this.context = this.canvas.getContext("2d");
 
-    this.height = 500;
-    this.width = 800;
+    this.height = 550;
+    this.width = 1100;
+
+    this.borderWidth = 2;
+    this.canvasHeight = this.height + 2 * this.borderWidth;
+    this.canvasWidth = this.width + 2 * this.borderWidth;
+
     this.tileSize = 10;
 
     this.gridWidth = this.width / this.tileSize;
@@ -30,8 +36,15 @@ var Game = function(params) {
     }
     this.graph = new Graph(grid);
 
-    this.canvas.setAttribute("width", this.width);
-    this.canvas.setAttribute("height", this.height);
+    this.canvas.setAttribute("width", this.canvasWidth);
+    this.canvas.setAttribute("height", this.canvasHeight);
+    this.display = new Display({
+      context: this.context,
+      canvas: this.canvas,
+      xOffset: this.borderWidth,
+      yOffset: this.borderWidth
+    });
+
 
     this.player1 = new Player({ game: this });
 
@@ -87,7 +100,7 @@ var Game = function(params) {
     if (DEBUG_MODE_OFF || debug_time_counter > DEBUG_SLOWDOWN_THRESHOLD) {
       debug_time_counter = 0;
 
-      drawRect(ctx, 0, 0, self.width, self.height, "#ddd", "#555");
+      drawRect(0, 0, self.canvasWidth, self.canvasHeight, "#ddd", "#555", true);
 
       var inProgressTraversals = [];
       for(var i=0; i<self.traversals.length; i++) {
@@ -122,7 +135,7 @@ var Game = function(params) {
         y0 = 10;
     var fontSize = 12;
 
-    drawRect(ctx, 10, 10, 150, 300, 'rgba(100, 100, 100, .8)', 'rgba(50, 50, 50, .8)');
+    drawRect(10, 10, 150, 300, 'rgba(100, 100, 100, .8)', 'rgba(50, 50, 50, .8)');
     ctx.font = fontSize + 'px sans-serif';
 
     var yCoord = 25,
@@ -147,7 +160,11 @@ var Game = function(params) {
   }
 
   function drawUnit(unit) {
-    drawRect(ctx, unit.x, unit.y, unit.width, unit.height, unit.color, darkenColor(unit.color, 0.2));
+    drawRect(unit.x, unit.y, unit.width, unit.height, unit.color, darkenColor(unit.color, 0.2));
+  }
+
+  function drawRect() {
+    self.display.drawRect.apply(self.display, arguments);
   }
 
   init.call(this, params);
