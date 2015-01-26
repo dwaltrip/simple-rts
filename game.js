@@ -60,7 +60,7 @@ var Game = function(params) {
     gameLoop();
   };
 
-  this.mouseDown = function(event) {
+  this.onMouseDown = function(event) {
     var mouseCoords = this.canvas.relMouseCoords(event);
 
     _.each(this.player1.units, function(unit) {
@@ -70,19 +70,18 @@ var Game = function(params) {
         this.selectUnit(unit);
       }
     }, this);
+  };
 
-    // var unit = new Unit({
-    //   game: this,
-    //   x: mouseCoords.x - (UNIT_SIZE / 2),
-    //   y: mouseCoords.y - (UNIT_SIZE / 2),
-    //   width: UNIT_SIZE,
-    //   height: UNIT_SIZE,
-    //   color: '#25F12A'
-    // });
-    // this.units.push(unit);
-    // window.setTimeout(function() {
-    //   self.removeUnit(unit);
-    // }, 2000);
+  this.onRightClick = function(event) {
+    var mouseCoords = this.canvas.relMouseCoords(event),
+        goalNode = this.getGridNodeForCoord(mouseCoords);
+
+    _.each(this.getSelectedUnits(), function(unit) {
+      var unitNode = this.getGridNodeForCoord(unit.getCoords());
+      var path = astar.search(this.graph, unitNode, goalNode);
+      var traversal = new Traversal({ game: this, unit: unit, path: path });
+      this.traversals.push(traversal);
+    }, this);
   };
 
   this.removeUnit = function(unitToRemove) {
@@ -102,6 +101,21 @@ var Game = function(params) {
     }
 
     this.selectedUnits[unit.id] = unit;
+  };
+
+  this.getSelectedUnits = function() {
+    var units = [];
+    for(var unitId in this.selectedUnits) {
+      units.push(this.selectedUnits[unitId]);
+    }
+    return units;
+  };
+
+  this.getGridNodeForCoord = function(coord) {
+    var gridX = Math.floor(coord.x / this.tileSize),
+        gridY = Math.floor(coord.y / this.tileSize);
+
+    return this.graph.grid[gridX][gridY];
   };
 
   function gameLoop() {
