@@ -50,7 +50,7 @@ var Game = function(params) {
     this.player1 = new Player({ game: this });
 
     this.units = [];
-    this.traversals = [];
+    this.traversals = {};
     this.selectedUnits = {};
 
     this.debugData = {};
@@ -80,7 +80,8 @@ var Game = function(params) {
       var unitNode = this.getGridNodeForCoord(unit.getCoords());
       var path = astar.search(this.graph, unitNode, goalNode);
       var traversal = new Traversal({ game: this, unit: unit, path: path });
-      this.traversals.push(traversal);
+
+      this.traversals[unit.id] = traversal;
     }, this);
   };
 
@@ -131,15 +132,14 @@ var Game = function(params) {
       drawRect(0, 0, self.canvasWidth, self.canvasHeight, "#ddd", "#555", true); 
       self.drawSidePanel();
 
-      var inProgressTraversals = [];
-      for(var i=0; i<self.traversals.length; i++) {
-        var traversal = self.traversals[i];
+      for(var unitId in self.traversals) {
+        var traversal = self.traversals[unitId];
         traversal.tick(timeDelta);
-        if (traversal.isNotFinished) {
-          inProgressTraversals.push(traversal);
+
+        if (traversal.isFinished) {
+          delete self.traversals[unitId];
         }
       }
-      self.traversals = inProgressTraversals;
 
       for(var i=0; i < self.player1.units.length; i++) {
         var unit = self.player1.units[i];

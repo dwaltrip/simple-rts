@@ -3,7 +3,7 @@ var Traversal = function(params) {
   this.path = params.path;
   this.unit = params.unit;
   this.game = params.game;
-  this.isNotFinished = true;
+  this.isFinished = false;
 
   var goalNode = this.path[this.path.length - 1];
   var goalCoords = nodeCoords(goalNode);
@@ -38,7 +38,7 @@ var Traversal = function(params) {
     }
 
     if (this.unit.x == goalCoords.x && this.unit.y == goalCoords.y) {
-      this.isNotFinished = false;
+      this.isFinished = true;
     }
   }
 
