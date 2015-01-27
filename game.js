@@ -46,6 +46,7 @@ var Game = function(params) {
       yOffset: this.borderWidth
     });
 
+    this.userInterface = new UserInterface({ game: this });
 
     this.player1 = new Player({ game: this });
 
@@ -60,23 +61,10 @@ var Game = function(params) {
     gameLoop();
   };
 
-  this.onMouseDown = function(event) {
-    var mouseCoords = this.canvas.relMouseCoords(event);
+  this.instructSelectedUnitsToMoveTo = function(coord) {
+    var goalNode = this.getGridNodeForCoord(coord);
 
-    _.each(this.player1.units, function(unit) {
-      var boundingRect = unit.getBoundingRect();
-      var clickIsInRect = isPointInRect(mouseCoords, boundingRect);
-      if (clickIsInRect) {
-        this.selectUnit(unit);
-      }
-    }, this);
-  };
-
-  this.onRightClick = function(event) {
-    var mouseCoords = this.canvas.relMouseCoords(event),
-        goalNode = this.getGridNodeForCoord(mouseCoords);
-
-    _.each(this.getSelectedUnits(), function(unit) {
+    _.each(this.selectedUnits, function(unit) {
       var unitNode = this.getGridNodeForCoord(unit.getCoords());
       var path = astar.search(this.graph, unitNode, goalNode);
       var traversal = new Traversal({ game: this, unit: unit, path: path });
@@ -97,19 +85,36 @@ var Game = function(params) {
   }
 
   this.selectUnit = function(unit) {
-    for(var unitId in this.selectedUnits) {
-      delete this.selectedUnits[unitId];
-    }
-
+    for(var unitId in this.selectedUnits) { delete this.selectedUnits[unitId]; }
     this.selectedUnits[unit.id] = unit;
   };
 
-  this.getSelectedUnits = function() {
-    var units = [];
-    for(var unitId in this.selectedUnits) {
-      units.push(this.selectedUnits[unitId]);
+  this.selectUnitsAt = function(coord) {
+    var newlySelectedUnits = _.filter(this.player1.units, function(unit) {
+      return isPointInRect(coord, unit.getBoundingRect());
+    }, this);
+
+    if (newlySelectedUnits.length > 0) {
+      for(var unitId in this.selectedUnits) { delete this.selectedUnits[unitId]; }
+      this.selectUnits(newlySelectedUnits);
     }
-    return units;
+  };
+
+  this.selectUnitsInRect = function(rect) {
+    var newlySelectedUnits = _.filter(this.player1.units, function(unit) {
+      return doRectsOverlap(rect, unit.getBoundingRect());
+    }, this);
+
+    if (newlySelectedUnits.length > 0) {
+      for(var unitId in this.selectedUnits) { delete this.selectedUnits[unitId]; }
+      this.selectUnits(newlySelectedUnits);
+    }
+  };
+
+  this.selectUnits = function(units) {
+    _.each(units, function(unit) {
+      this.selectedUnits[unit.id] = unit;
+    }, this);
   };
 
   this.getGridNodeForCoord = function(coord) {
@@ -154,6 +159,12 @@ var Game = function(params) {
       for(var unitId in self.selectedUnits) {
         var unit = self.selectedUnits[unitId];
         drawUnitSelection(unit);
+      }
+
+      var selectionRect = self.userInterface.selectionRect;
+      if (selectionRect && selectionRect.width > 0 && selectionRect.height > 0) {
+        drawRect(selectionRect.x, selectionRect.y, selectionRect.width, selectionRect.height,
+          'rgba(100, 250, 100, .1)', 'rgba(50, 200, 50, 1)');
       }
 
       if (!DEBUG_MODE_OFF) {
@@ -224,6 +235,11 @@ var Game = function(params) {
   function isPointInRect(point, rect) {
     return (rect.x <= point.x  && point.x <= (rect.x + rect.width)) &&
            (rect.y <= point.y  && point.y <= (rect.y + rect.height));
+  }
+
+  function doRectsOverlap(rect1, rect2) {
+    return !(rect1.x + rect1.width <= rect2.x || rect2.x + rect2.width <= rect1.x ||
+      rect1.y + rect1.height <= rect2.y || rect2.y + rect2.height <= rect1.y);
   }
 
   function drawUnit(unit) {

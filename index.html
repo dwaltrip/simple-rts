@@ -18,6 +18,7 @@
   <script type="text/javascript" src="traversal.js"></script>
   <script type="text/javascript" src="unit.js"></script>
   <script type="text/javascript" src="player.js"></script>
+  <script type="text/javascript" src="userInterface.js"></script>
 
   <script type="text/javascript" src="astar.js"></script>
   <script type="text/javascript" src="game.js"></script>
@@ -28,8 +29,11 @@
       var canvas = document.getElementById('game-canvas');
 
       game = new Game({ canvas: canvas });
-      canvas.addEventListener('mousedown', function(event) { game.onMouseDown.call(game, event); }, false);
-      canvas.addEventListener('contextmenu', function(event) { event.preventDefault(); game.onRightClick(event); return false; }, false);
+
+      canvas.addEventListener('mousedown', game.userInterface.onMouseDown, false);
+      canvas.addEventListener('mousemove', game.userInterface.onMouseMove, false);
+      canvas.addEventListener('mouseup', game.userInterface.onMouseUp, false);
+      canvas.addEventListener('contextmenu', game.userInterface.onContextMenu, false);
 
       game.run();
     });
