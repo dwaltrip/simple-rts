@@ -6,7 +6,7 @@ var Unit = (function() {
     return unitCount;
   };
 
-  var VELOCITY = 0.15;
+  var VELOCITY = 0.05;
 
   return function(params) {
     var params = params || {};
