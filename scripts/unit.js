@@ -12,6 +12,7 @@ var Unit = (function() {
     var params = params || {};
     var self = this;
 
+    this.name = 'Blob';
     this.id = generateId();
     this.x = params.x || null;
     this.y = params.y || null;
@@ -48,6 +49,14 @@ var Unit = (function() {
 
     this.getBoundingRect = function() {
       return { x: this.x, y: this.y, width: this.width, height: this.height };
+    };
+
+    this.toJSON = function() {
+      return {
+        name: this.name,
+        id: this.id,
+        coords: prettyCoords(this.getCoords())
+      };
     };
 
     function updateGridCoords() {

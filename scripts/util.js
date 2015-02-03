@@ -24,5 +24,5 @@ function relMouseCoords(event){
 HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
 
 function prettyCoords(coords) {
-  return '[' + coords.x + ', ' + coords.y + ']';
+  return '[' + coords.x.toFixed(1) + ', ' + coords.y.toFixed(1) + ']';
 }

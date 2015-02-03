@@ -16,14 +16,12 @@ var Game = function(params) {
     this.canvas = params.canvas;
     this.context = this.canvas.getContext("2d");
 
-    this.mapHeight = 550;
-    this.mapWidth = 900;
-    this.separatorWidth = 10;
-    this.sidePanelWidth = 200;
+    this.mapHeight = 600;
+    this.mapWidth = 800;
     this.borderWidth = 2;
 
     this.canvasHeight = this.mapHeight + 2 * this.borderWidth;
-    this.canvasWidth = this.mapWidth + this.sidePanelWidth + this.separatorWidth + 2 * this.borderWidth;
+    this.canvasWidth = this.mapWidth + 2 * this.borderWidth;
 
     this.tileSize = 10;
 
@@ -135,7 +133,7 @@ var Game = function(params) {
       debug_time_counter = 0;
 
       drawRect(0, 0, self.canvasWidth, self.canvasHeight, "#ddd", "#555", true); 
-      self.drawSidePanel();
+      self.renderSidePanel();
 
       for(var unitId in self.traversals) {
         var traversal = self.traversals[unitId];
@@ -175,38 +173,30 @@ var Game = function(params) {
     }
   }
 
-  this.drawSidePanel = function() {
-    drawRect(self.mapWidth + self.borderWidth * 2, 0, self.separatorWidth, self.canvasHeight, "#555", "#555", true);
-    drawRect(self.canvasWidth - self.sidePanelWidth, 0, self.sidePanelWidth, self.canvasHeight, "#ddd", "#555", true);
-
-    var selectedUnit = null;
-    for(var unitId in this.selectedUnits) {
-      selectedUnit = this.selectedUnits[unitId];
+  this.renderSidePanel = function() {
+    if (this.previouslySelectedUnits == undefined) {
+      this.previouslySelectedUnits = Object.keys(this.selectedUnits);
+      this.previouslySelectedUnits.sort();
+      this.previouslySelectedUnits = this.previouslySelectedUnits.join('-');
     }
 
-    var sidePanelLeft = self.canvasWidth - self.sidePanelWidth - self.borderWidth / 2;
+    var currentUnits = Object.keys(this.selectedUnits);
+    currentUnits.sort();
+    var currentUnits = currentUnits.join('-');
 
-    if (selectedUnit) {
-      var lines = [
-        { text: 'Selected Unit', fontSize: 20 },
-        { text: 'Id: ' + selectedUnit.id, fontSize: 16, xOffset: 5 },
-        { text: ['Coords:', prettyCoords(selectedUnit.getCoords())].join(' '), fontSize: 16, xOffset: 5 }
-      ];
+    if (currentUnits !== this.previouslySelectedUnits) {
+      var detailsList = $('.unit-details-list');
+      detailsList.empty();
 
-      var yCoord = 15 + Math.ceil(lines[0].fontSize / 2);
+      var selectedUnit = null;
+      for(var unitId in this.selectedUnits) {
+        selectedUnit = this.selectedUnits[unitId];
+        detailsList.append(Templates.unitDetails({ unit: selectedUnit.toJSON() }));
+      }
 
-      _.each(lines, function(lineData) {
-        this.context.font = lineData.fontSize + 'px sans-serif';
-
-        var xOffset = lineData.xOffset || 0;
-        this.context.fillText(lineData.text, sidePanelLeft + 15 + xOffset, yCoord);
-        yCoord += lineData.fontSize;
-      }, this);
+      this.previouslySelectedUnits = currentUnits;
     }
-
-    //drawRect(self.canvasWidth - self.sidePanelWidth - self.borderWidth / 2, 200, self.sidePanelWidth - self.borderWidth, 100, '#25F12A');
   }
-
 
   this.drawDebugOverlay = function(debugData) {
     var x0 = 10,

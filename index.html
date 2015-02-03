@@ -5,17 +5,29 @@
 </head>
 
 <body>
-  <section class="game-container">
-    <canvas id="game-canvas"></canvas>
-  </section>
+  <div class="main">
+    <section class="game-container">
+      <canvas id="game-canvas"></canvas>
+    </section>
+
+    <section class="side-panel-container">
+      <header>
+        <h1>Selected Units</h1>
+      </header>
+
+      <div class="unit-details-list">
+      </div>
+  </div>
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
   <script type="text/javascript" src="lib/lodash-2.4.1.js"></script>
+  <script type="text/javascript" src="lib/handlebars-2.0.0.js"></script>
   <script type="text/javascript" src="lib/astar.js"></script>
-  
+
   <script type="text/javascript" src="scripts/draw.js"></script>
   <script type="text/javascript" src="scripts/util.js"></script>
 
+  <script type="text/javascript" src="scripts/templates.js"></script>
   <script type="text/javascript" src="scripts/traversal.js"></script>
   <script type="text/javascript" src="scripts/unit.js"></script>
   <script type="text/javascript" src="scripts/player.js"></script>
