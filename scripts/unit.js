@@ -12,6 +12,15 @@ var Unit = (function() {
     var params = params || {};
     var self = this;
 
+    buildProperty(this, 'x');
+    buildProperty(this, 'y');
+
+    Object.defineProperty(this, 'prettyCoords', {
+      get: function() {
+        return prettyCoords(this.getCoords());
+      }
+    });
+
     this.name = 'Blob';
     this.id = generateId();
     this.x = params.x || null;

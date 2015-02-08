@@ -45,6 +45,7 @@ var Game = function(params) {
     });
 
     this.userInterface = new UserInterface({ game: this });
+    this.templateManager = new TemplateManager();
 
     this.player1 = new Player({ game: this });
 
@@ -186,13 +187,15 @@ var Game = function(params) {
 
     if (currentUnits !== this.previouslySelectedUnits) {
       var detailsList = $('.unit-details-list');
-      detailsList.empty();
 
-      var selectedUnit = null;
-      for(var unitId in this.selectedUnits) {
-        selectedUnit = this.selectedUnits[unitId];
-        detailsList.append(Templates.unitDetails({ unit: selectedUnit.toJSON() }));
-      }
+      detailsList.empty();
+      this.templateManager.removeObserversForTemplate('unitDetails'); // NEED TO CLEAN UP OBSERVERS HERE ALSO
+
+      _.each(this.selectedUnits, function(selectedUnit) {
+        // TODO: render isn't 100% perfectly updating unit coords, right now
+        // occasionally after the unit is done moving, one of the coords will be off by between 0.1 to 0.9 (not a whole num)
+        this.templateManager.render('unitDetails', detailsList, selectedUnit);
+      }, this);
 
       this.previouslySelectedUnits = currentUnits;
     }
