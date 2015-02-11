@@ -22,15 +22,21 @@ var Unit = (function() {
     });
 
     this.name = 'Blob';
+    this.game = params.game;
+    this.player = params.player;
     this.id = generateId();
+
     this.x = params.x || null;
     this.y = params.y || null;
-    this.game = params.game;
+    this.hitpoints = params.hitpoints;
+    this.attackDamage = params.attackDamage;
+    this.attackSpeed = params.attackSpeed;
+
     updateGridCoords();
 
     this.width = params.width || null;
     this.height = params.height || null;
-    this.color = params.color || '#2924FE';
+    this.color = params.color;
     this.velocity = params.velocity || VELOCITY;
 
     this.move = function(params) {
@@ -44,13 +50,13 @@ var Unit = (function() {
       this.y = newY;
 
       updateGridCoords();
-    }
+    };
 
     this.moveTo = function(coords) {
       this.x = coords.x;
       this.y = coords.y;
       updateGridCoords();
-    }
+    };
 
     this.getCoords = function() {
       return { x: this.x, y: this.y };

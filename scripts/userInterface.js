@@ -37,11 +37,26 @@ var UserInterface = function(params) {
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // right click
+  // TODO: CREATE STATE MACHINE
   this.onContextMenu = function(event) {
     event.preventDefault();
 
     var mouseCoords = canvas.relMouseCoords(event);
-    game.instructSelectedUnitsToMoveTo(mouseCoords);
+    var targetOfAttack = _.find(game.currentPlayer.opponent.units, function(unit) {
+      return isPointInRect(mouseCoords, unit.getBoundingRect());
+    });
+    var hasSelectedUnits = Object.keys(game.selectedUnits).length > 0;
+
+    if (targetOfAttack && hasSelectedUnits) {
+      // TODO: do something with this new Attack object
+      var attack = new Attack({
+        attackers: _.map(this.selectedUnits, function(unit) { return unit; }),
+        target: targetOfAttack
+      });
+
+    } else {
+      game.instructSelectedUnitsToMoveTo(mouseCoords);
+    }
 
     return false;
   };

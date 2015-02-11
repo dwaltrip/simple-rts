@@ -15,9 +15,9 @@ var TemplateManager = (function() {
       unitDetails: {
         compile: Handlebars.compile([
           '<div class="unit-details">',
-            '<div>Name: {{name}}</div>',
             '<div>Id: {{id}}</div>',
             '<div>Coords: {{prettyCoords}}</div>',
+            '<div>Hitpoints: {{hitpoints}}</div>',
           '</div>'
           ].join('\n')),
         dependentKeys: ['x', 'y'],
@@ -55,6 +55,8 @@ var TemplateManager = (function() {
       if (template.dependentKeys) {
         _.each(template.dependentKeys, function(propName) {
 
+          // Should these var declarations be outside the each loop?
+          // I think perhaps for each unit, x & y observer should use the same callback
           var $nextContent, observerId;
           function cb() {
             $nextContent = $(template.compile(objContext));

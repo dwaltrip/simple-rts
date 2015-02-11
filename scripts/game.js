@@ -47,9 +47,16 @@ var Game = function(params) {
     this.userInterface = new UserInterface({ game: this });
     this.templateManager = new TemplateManager();
 
-    this.player1 = new Player({ game: this });
+    this.player1 = new Player({ game: this, name: 'player1' });
+    this.player2 = new Player({ game: this, name: 'player2', color: '#AA0E0E' });
+    this.players = [this.player1, this.player2];
+    this.currentPlayer = this.player1;
 
-    this.units = [];
+    this.player1.opponent = this.player2;
+    this.player2.opponent = this.player1;
+    this.opponent = this.player2;
+
+    // this.units = []; // TODO: this array doesn't actually hold anything, yet is referenced
     this.traversals = {};
     this.selectedUnits = {};
 
@@ -74,14 +81,14 @@ var Game = function(params) {
 
   this.removeUnit = function(unitToRemove) {
     var removalIndex = null;
-    for(var i=0; i < self.units.length; i++) {
-      var unit = self.units[i];
+    for(var i=0; i < this.units.length; i++) {
+      var unit = this.units[i];
       if (unit.id == unitToRemove.id) {
         removalIndex = i;
       }
     }
     this.units.splice(removalIndex, 1);
-  }
+  };
 
   this.selectUnit = function(unit) {
     for(var unitId in this.selectedUnits) { delete this.selectedUnits[unitId]; }
@@ -145,15 +152,9 @@ var Game = function(params) {
         }
       }
 
-      for(var i=0; i < self.player1.units.length; i++) {
-        var unit = self.player1.units[i];
-        drawUnit(unit);
-      }
-
-      for(var i=0; i < self.units.length; i++) {
-        var unit = self.units[i];
-        drawUnit(unit);
-      }
+      _.each(self.players, function(player) {
+        _.each(player.units, function(unit) { drawUnit(unit); });
+      });
 
       for(var unitId in self.selectedUnits) {
         var unit = self.selectedUnits[unitId];
@@ -193,7 +194,7 @@ var Game = function(params) {
 
       _.each(this.selectedUnits, function(selectedUnit) {
         // TODO: render isn't 100% perfectly updating unit coords, right now
-        // occasionally after the unit is done moving, one of the coords will be off by between 0.1 to 0.9 (not a whole num)
+        // occasionally after the unit is done moving, one of the coords will be off by 0.2 or 0.8
         this.templateManager.render('unitDetails', detailsList, selectedUnit);
       }, this);
 
@@ -223,16 +224,6 @@ var Game = function(params) {
         yCoord += yDelta;
       }
     }
-  }
-
-  function isPointInRect(point, rect) {
-    return (rect.x <= point.x  && point.x <= (rect.x + rect.width)) &&
-           (rect.y <= point.y  && point.y <= (rect.y + rect.height));
-  }
-
-  function doRectsOverlap(rect1, rect2) {
-    return !(rect1.x + rect1.width <= rect2.x || rect2.x + rect2.width <= rect1.x ||
-      rect1.y + rect1.height <= rect2.y || rect2.y + rect2.height <= rect1.y);
   }
 
   function drawUnit(unit) {
