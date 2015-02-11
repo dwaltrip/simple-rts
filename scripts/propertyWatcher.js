@@ -107,9 +107,11 @@ function buildProperty(obj, propName) {
     },
     set: function(val) {
       if (this[_propName] !== val) {
+        this[_propName] = val;
         propertyWatcher.propDidChange(this, propName);
+      } else {
+        this[_propName] = val;
       }
-      this[_propName] = val;
     },
   };
   Object.defineProperty(obj, propName, prop);
