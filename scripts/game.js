@@ -98,19 +98,14 @@ var Game = function(params) {
     this.units.splice(removalIndex, 1);
   };
 
-  this.selectUnit = function(unit) {
-    for(var unitId in this.selectedUnits) { delete this.selectedUnits[unitId]; }
-    this.selectedUnits[unit.id] = unit;
-  };
-
-  this.selectUnitsAt = function(coord) {
-    var newlySelectedUnits = _.filter(this.player1.units, function(unit) {
+  this.selectUnitAt = function(coord) {
+    var newlySelectedUnit = _.find(this.player1.units, function(unit) {
       return isPointInRect(coord, unit.getBoundingRect());
     }, this);
 
-    if (newlySelectedUnits.length > 0) {
+    if (newlySelectedUnit) {
       for(var unitId in this.selectedUnits) { delete this.selectedUnits[unitId]; }
-      this.selectUnits(newlySelectedUnits);
+      this.selectedUnits[newlySelectedUnit.id] = newlySelectedUnit;
     }
   };
 
@@ -121,14 +116,11 @@ var Game = function(params) {
 
     if (newlySelectedUnits.length > 0) {
       for(var unitId in this.selectedUnits) { delete this.selectedUnits[unitId]; }
-      this.selectUnits(newlySelectedUnits);
-    }
-  };
 
-  this.selectUnits = function(units) {
-    _.each(units, function(unit) {
-      this.selectedUnits[unit.id] = unit;
-    }, this);
+      _.each(newlySelectedUnits, function(unit) {
+        this.selectedUnits[unit.id] = unit;
+      }, this);
+    }
   };
 
   this.getGridNodeForCoord = function(coord) {

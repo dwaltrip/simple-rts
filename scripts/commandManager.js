@@ -31,7 +31,7 @@ var CommandManager = function(params) {
 
   var commandList = {
     selectSingleUnit: function() {
-      game.selectUnitsAt(self.game.userInterface.mouse);
+      game.selectUnitAt(self.game.userInterface.mouse);
     },
 
     selectMultipleUnits: function() {
