@@ -5,11 +5,17 @@ var Game = function(params) {
       currTime, lastTime;
   var OPEN_TILE = 1;
 
-  var DEBUG_MODE_OFF = true;
-  //var DEBUG_MODE_OFF = false;
 
-  var DEBUG_SLOWDOWN_THRESHOLD = 50,
-      debug_time_counter = 0;
+  var IS_DEBUG_SLOWDOWN_ON = true;
+  //var IS_DEBUG_SLOWDOWN_ON = false;
+
+  var DEBUG_SLOWDOWN_THRESHOLD = 0;
+  // var DEBUG_SLOWDOWN_THRESHOLD = 50;
+  var debug_time_counter = 0;
+
+  //var IS_DEBUG_DISPLAY_ON = false;
+  var IS_DEBUG_DISPLAY_ON = true;
+
 
   function init(params) {
     params = params || {};
@@ -45,6 +51,7 @@ var Game = function(params) {
     });
 
     this.userInterface = new UserInterface({ game: this });
+    this.commandManager = new CommandManager({ game: this });
     this.templateManager = new TemplateManager();
 
     this.player1 = new Player({ game: this, name: 'player1' });
@@ -137,7 +144,7 @@ var Game = function(params) {
     timeDelta = lastTime ? (currTime - lastTime) : 0;
     lastTime = currTime;
 
-    if (DEBUG_MODE_OFF || debug_time_counter > DEBUG_SLOWDOWN_THRESHOLD) {
+    if (IS_DEBUG_SLOWDOWN_ON || debug_time_counter > DEBUG_SLOWDOWN_THRESHOLD) {
       debug_time_counter = 0;
 
       drawRect(0, 0, self.canvasWidth, self.canvasHeight, "#ddd", "#555", true); 
@@ -167,7 +174,7 @@ var Game = function(params) {
           'rgba(100, 250, 100, .1)', 'rgba(50, 200, 50, 1)');
       }
 
-      if (!DEBUG_MODE_OFF) {
+      if (IS_DEBUG_DISPLAY_ON && Object.keys(self.debugData).length > 0) {
         self.drawDebugOverlay(self.debugData);
       }
     } else {

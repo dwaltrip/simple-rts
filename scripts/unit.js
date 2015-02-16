@@ -58,6 +58,11 @@ var Unit = (function() {
       updateGridCoords();
     };
 
+    this.destroy = function() {
+      console.log('foo');
+      // remove all references to unit, and any property observers
+    };
+
     this.getCoords = function() {
       return { x: this.x, y: this.y };
     };
