@@ -51,10 +51,6 @@ var UserInterface = function(params) {
     self.mouse.y = coords.y;
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // TODO: fix bug where right clicking selects a unit
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
   // right click
   this.onContextMenu = function(event) {
     event.preventDefault();

@@ -80,9 +80,10 @@ var Game = function(params) {
     _.each(this.selectedUnits, function(unit) {
       var unitNode = this.getGridNodeForCoord(unit.getCoords());
       var path = astar.search(this.graph, unitNode, goalNode);
-      var traversal = new Traversal({ game: this, unit: unit, path: path });
 
-      this.traversals[unit.id] = traversal;
+      if (path.length > 0) {
+        this.traversals[unit.id] = new Traversal({ game: this, unit: unit, path: path });
+      }
     }, this);
   };
 
@@ -200,8 +201,6 @@ var Game = function(params) {
       this.templateManager.removeObserversForTemplate('unitDetails'); // NEED TO CLEAN UP OBSERVERS HERE ALSO
 
       _.each(this.selectedUnits, function(selectedUnit) {
-        // TODO: render isn't 100% perfectly updating unit coords, right now
-        // occasionally after the unit is done moving, one of the coords will be off by 0.2 or 0.8
         this.templateManager.render('unitDetails', detailsList, selectedUnit);
       }, this);
 
