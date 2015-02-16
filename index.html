@@ -48,10 +48,10 @@
 
       game = new Game({ canvas: canvas });
 
-      canvas.addEventListener('mousedown', game.userInterface.onMouseDown, false);
-      canvas.addEventListener('mousemove', game.userInterface.onMouseMove, false);
-      canvas.addEventListener('mouseup', game.userInterface.onMouseUp, false);
-      canvas.addEventListener('contextmenu', game.userInterface.onContextMenu, false);
+      var eventNames = ['mousedown', 'mousemove', 'mouseup', 'mouseleave', 'mouseenter', 'contextmenu'];
+      _.each(eventNames, function(eventName) {
+        canvas.addEventListener(eventName, game.userInterface.getEventHandlerFor(eventName), false);
+      });
 
       game.run();
     });

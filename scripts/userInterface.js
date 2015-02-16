@@ -6,35 +6,70 @@ var UserInterface = function(params) {
   var game = params.game;
   var canvas = params.game.canvas;
 
-  // TODO: using self inside public methods that handle DOM events as 'addEventListener' binds callbacks to DOM element
   var self = this;
   this.mouse = { x: 0, y: 0, leftButton: 'up', rightButton: 'up', isDragging: false, lastButtonModified: null };
 
-  this.onMouseDown = function(event) {
-    updateMouseButtons(event);
-    game.commandManager.executeCommandsForEvent('mousedown');
+  // UI events
+  // TODO: think about a less-coupled way to call commandManager.executeCommandsForEvent
+  // TODO: I think there is still a bug or two here related to leaving and re-entering canvas (with different click states)
+  var eventHandlers = {
+    mousedown: function(event) {
+      updateMouseButtons(event);
+      game.commandManager.executeCommandsForEvent('mousedown');
 
-    self.rawSelectionRect = { x: self.mouse.x, y: self.mouse.y, width: 0, height: 0 };
-    self.selectionRect = { x: self.mouse.x, y: self.mouse.y, width: 0, height: 0 };
+      self.rawSelectionRect = { x: self.mouse.x, y: self.mouse.y, width: 0, height: 0 };
+      self.selectionRect = { x: self.mouse.x, y: self.mouse.y, width: 0, height: 0 };
+    },
+
+    mousemove: function(event) {
+      if (self.mouse.leftButton === 'down') {
+        var coords = canvas.relMouseCoords(event);
+        self.rawSelectionRect.width = coords.x - self.rawSelectionRect.x;
+        self.rawSelectionRect.height = coords.y - self.rawSelectionRect.y;
+        self.selectionRect = normalizeRect(self.rawSelectionRect);
+        self.mouse.isDragging = true;
+      }
+    },
+
+    mouseup: function(event) {
+      // this is for edge case where you click down mouse outside of canvas and then drag into canvas
+      if (!(self.mouse.leftButton === 'down' || self.mouse.rightButton === 'down')) { return; }
+
+      updateMouseButtons(event);
+      game.commandManager.executeCommandsForEvent('mouseup');
+
+      self.rawSelectionRect = null;
+      self.selectionRect = null;
+      self.mouse.isDragging = false;
+      self.mouse.lastButtonModified = null;
+    },
+
+    // TODO: remove duplication with mouseup
+    mouseleave: function(event) {
+      // TODO: event.which not reliable for mouseenter & leave on Firefox -- test if this fixes it
+      if (self.mouse.leftButton === 'down') {
+        event.which = LEFT_MOUSE_BUTTON;
+        updateMouseButtons(event);
+
+        game.commandManager.executeCommandsForEvent('mouseleave');
+
+        self.rawSelectionRect = null;
+        self.selectionRect = null;
+        self.mouse.isDragging = false;
+        self.mouse.lastButtonModified = null;
+      }
+    },
+
+    mouseenter: function(event) {},
+
+    // prevent browser right click menu
+    contextmenu: function(event) { event.preventDefault(); return false; }
   };
 
-  this.onMouseMove = function(event) {
-    if (self.mouse.leftButton === 'down') {
-      var coords = canvas.relMouseCoords(event);
-      self.rawSelectionRect.width = coords.x - self.rawSelectionRect.x;
-      self.rawSelectionRect.height = coords.y - self.rawSelectionRect.y;
-      self.selectionRect = normalizeRect(self.rawSelectionRect);
-      self.mouse.isDragging = true;
-    }
-  };
 
-  self.onMouseUp = function(event) {
-    updateMouseButtons(event);
-    game.commandManager.executeCommandsForEvent('mouseup');
-
-    self.rawSelectionRect = null;
-    self.selectionRect = null;
-    self.mouse.isDragging = false;
+  // TODO (maybe): bind handlers such that they don't need to use 'self'
+  this.getEventHandlerFor = function(eventName) {
+    return eventHandlers[eventName];
   };
 
   function updateMouseButtons(event) {
@@ -50,12 +85,6 @@ var UserInterface = function(params) {
     self.mouse.x = coords.x;
     self.mouse.y = coords.y;
   }
-
-  // right click
-  this.onContextMenu = function(event) {
-    event.preventDefault();
-    return false;
-  };
 
   // flips negative width and height values
   function normalizeRect(rect) {

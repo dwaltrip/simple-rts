@@ -13,6 +13,9 @@ var CommandManager = function(params) {
       eventName: 'mouseup', mouse: { targetButton: 'left', isDragging: true },
       commandName: 'selectMultipleUnits'
     }, {
+      eventName: 'mouseleave', mouse: { targetButton: 'left', isDragging: true },
+      commandName: 'selectMultipleUnits'
+    }, {
       eventName: 'mouseup', mouse: { targetButton: 'right', isDragging: false },
       commandName: 'performPrimaryAction'
     }

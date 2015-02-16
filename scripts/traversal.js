@@ -10,6 +10,8 @@ var Traversal = function(params) {
   var grid = this.game.graph.grid;
   var nextNodeIndex = 0;
 
+  // TODO: refactor to be part of 'unitActions', when that is implemented!
+  // should rename this to update..
   this.tick = function(tickAmount) {
     var distanceToMove = tickAmount * this.unit.velocity;
     var nextNode = this.path[nextNodeIndex];
