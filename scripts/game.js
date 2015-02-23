@@ -203,7 +203,7 @@ var Game = function(params) {
         y0 = 10;
     var fontSize = 12;
 
-    drawRect(10, 10, 150, 300, 'rgba(100, 100, 100, .8)', 'rgba(50, 50, 50, .8)');
+    drawRect(10, 10, 250, 300, 'rgba(100, 100, 100, .8)', 'rgba(50, 50, 50, .8)');
     this.context.font = fontSize + 'px sans-serif';
 
     var yCoord = 25,

@@ -6,18 +6,17 @@ var Traversal = function(params) {
   this.isFinished = false;
 
   var goalNode = this.path[this.path.length - 1];
-  var goalCoords = nodeCoords(goalNode);
+  this.goalCoords = nodeCoords(goalNode);
   var grid = this.game.graph.grid;
   var nextNodeIndex = 0;
 
   // TODO: refactor to be part of 'unitActions', when that is implemented!
-  // should rename this to update..
   this.update = function(timeDelta) {
     var distanceToMove = timeDelta * this.unit.velocity;
     var nextNode = this.path[nextNodeIndex];
     var nextNodeCoords = nodeCoords(nextNode);
 
-    var distToNode = dist(nextNodeCoords, this.unit.getCoords());
+    var distToNode = distanceBetweenCoords(nextNodeCoords, this.unit.getCoords());
 
     if (timeDelta) {
       if (distToNode <= distanceToMove) {
@@ -39,18 +38,8 @@ var Traversal = function(params) {
       }
     }
 
-    if (this.unit.x == goalCoords.x && this.unit.y == goalCoords.y) {
+    if (areCoordsEqual(this.unit.getCoords(), this.goalCoords)) {
       this.isFinished = true;
     }
-  }
-
-  function nodeCoords(node) {
-    var x = this.game.tileSize * node.x;
-    var y = this.game.tileSize * node.y;
-    return { x: x, y: y };
-  }
-
-  function dist(p1, p2) {
-    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
   }
 };

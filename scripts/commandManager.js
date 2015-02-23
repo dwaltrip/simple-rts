@@ -31,7 +31,7 @@ var CommandManager = function(params) {
 
   var commandList = {
     selectSingleUnit: function() {
-      game.selectUnitAt(self.game.userInterface.mouse);
+      self.game.selectUnitAt(self.game.userInterface.mouse);
     },
 
     selectMultipleUnits: function() {
@@ -40,16 +40,15 @@ var CommandManager = function(params) {
 
     performPrimaryAction: function() {
       var mouseCoords = self.game.userInterface.mouse;
-      var game = self.game;
 
-      var targetOfAttack = _.find(game.currentPlayer.opponent.units, function(unit) {
+      var targetOfAttack = _.find(self.game.currentPlayer.opponent.units, function(unit) {
         return isPointInRect(mouseCoords, unit.getBoundingRect());
       });
 
       // we can get away with only checking first selected units,
       // as you cant select you own units and an enemy unit at the same time
-      var hasSelectedUnits = Object.keys(game.selectedUnits).length > 0 &&
-        game.selectedUnits[Object.keys(game.selectedUnits)[0]].player === game.currentPlayer;
+      var hasSelectedUnits = Object.keys(self.game.selectedUnits).length > 0 &&
+        self.game.selectedUnits[Object.keys(self.game.selectedUnits)[0]].player === self.game.currentPlayer;
 
       if (targetOfAttack && hasSelectedUnits) {
         console.log('-- attacking!')
@@ -58,9 +57,8 @@ var CommandManager = function(params) {
           attackers: _.map(this.selectedUnits, function(unit) { return unit; }),
           target: targetOfAttack
         });
-
-      } else if (hasSelectedUnits) {
-        game.instructSelectedUnitsToMoveTo(mouseCoords);
+      } else if(hasSelectedUnits) {
+        self.game.instructSelectedUnitsToMoveTo(mouseCoords);
       }
     }
   };
