@@ -211,6 +211,9 @@ var Game = function(params) {
     for(var attr in debugData) {
       var val = debugData[attr];
       if (typeof val == 'object' && val !== null) {
+        this.context.fillText('label: ' + attr, 15, yCoord);
+        yCoord += yDelta;
+
         for (var nestedAttr in val) {
           this.context.fillText(nestedAttr + ': ' + JSON.stringify(val[nestedAttr]), 15, yCoord);
           yCoord += yDelta;

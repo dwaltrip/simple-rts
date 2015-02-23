@@ -4,6 +4,7 @@ var Traversal = function(params) {
   this.unit = params.unit;
   this.game = params.game;
   this.isFinished = false;
+  this.type = Action.MOVE;
 
   var goalNode = this.path[this.path.length - 1];
   this.goalCoords = nodeCoords(goalNode);
@@ -36,6 +37,14 @@ var Traversal = function(params) {
         var vector = { dx: dx, dy: dy };
         this.unit.move(vector);
       }
+    }
+
+    if (this.unit.currentAction.type === Action.MOVE) {
+      this.game.debugData['unit-action-' + this.unit.id] = {
+        action: 'MOVE',
+        pathLength: this.path.length,
+        nextNodeIndex: nextNodeIndex
+      };
     }
 
     if (areCoordsEqual(this.unit.getCoords(), this.goalCoords)) {

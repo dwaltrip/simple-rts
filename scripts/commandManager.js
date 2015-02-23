@@ -51,11 +51,13 @@ var CommandManager = function(params) {
         self.game.selectedUnits[Object.keys(self.game.selectedUnits)[0]].player === self.game.currentPlayer;
 
       if (targetOfAttack && hasSelectedUnits) {
-        console.log('-- attacking!')
-        // TODO: do something with this new Attack object
-        var attack = new Attack({
-          attackers: _.map(this.selectedUnits, function(unit) { return unit; }),
-          target: targetOfAttack
+        _.each(self.game.selectedUnits, function(unit) {
+          console.log('-- new attack for unit ' + unit.id);
+          unit.currentAction = new Attack({
+            attacker: unit,
+            target: targetOfAttack,
+            game: self.game
+          });
         });
       } else if(hasSelectedUnits) {
         self.game.instructSelectedUnitsToMoveTo(mouseCoords);

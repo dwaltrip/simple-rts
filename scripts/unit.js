@@ -27,11 +27,10 @@ var Unit = (function() {
     this.id = generateId();
     this.currentAction = null;
 
-    this.x = params.x || null;
-    this.y = params.y || null;
+    this.x = params.x;
+    this.y = params.y;
     this.hitpoints = params.hitpoints;
-    this.attackDamage = params.attackDamage;
-    this.attackSpeed = params.attackSpeed;
+    this.attack = params.attack;
 
     updateGridCoords();
 
@@ -40,6 +39,7 @@ var Unit = (function() {
     this.color = params.color;
     this.velocity = params.velocity || VELOCITY;
 
+    // check for having 0 hitpoints, and if so then remove self properly
     this.update = function(timeDelta) {
       if (this.currentAction) {
         this.currentAction.update(timeDelta);
