@@ -66,6 +66,7 @@ var Game = function(params) {
     this.selectedUnits = {};
 
     this.debugData = {};
+    this.debugCallbacks = [];
   };
 
   this.run = function() {
@@ -214,11 +215,17 @@ var Game = function(params) {
           this.context.fillText(nestedAttr + ': ' + JSON.stringify(val[nestedAttr]), 15, yCoord);
           yCoord += yDelta;
         }
+        this.context.fillText('-----', 15, yCoord);
+        yCoord += yDelta;
       } else {
         this.context.fillText(attr + ': ' + JSON.stringify(debugData[attr]), 15, yCoord);
         yCoord += yDelta;
       }
     }
+
+    _.each(self.debugCallbacks, function(cb) {
+      cb.call(self);
+    });
   }
 
   function drawUnit(unit) {
