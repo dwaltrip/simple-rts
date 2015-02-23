@@ -12,14 +12,14 @@ var Traversal = function(params) {
 
   // TODO: refactor to be part of 'unitActions', when that is implemented!
   // should rename this to update..
-  this.tick = function(tickAmount) {
-    var distanceToMove = tickAmount * this.unit.velocity;
+  this.update = function(timeDelta) {
+    var distanceToMove = timeDelta * this.unit.velocity;
     var nextNode = this.path[nextNodeIndex];
     var nextNodeCoords = nodeCoords(nextNode);
 
     var distToNode = dist(nextNodeCoords, this.unit.getCoords());
 
-    if (tickAmount) {
+    if (timeDelta) {
       if (distToNode <= distanceToMove) {
         nextNodeIndex++;
         this.unit.moveTo(nextNodeCoords);

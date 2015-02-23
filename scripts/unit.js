@@ -25,6 +25,7 @@ var Unit = (function() {
     this.game = params.game;
     this.player = params.player;
     this.id = generateId();
+    this.currentAction = null;
 
     this.x = params.x || null;
     this.y = params.y || null;
@@ -38,6 +39,16 @@ var Unit = (function() {
     this.height = params.height || null;
     this.color = params.color;
     this.velocity = params.velocity || VELOCITY;
+
+    this.update = function(timeDelta) {
+      if (this.currentAction) {
+        this.currentAction.update(timeDelta);
+
+        if (this.currentAction.isFinished) {
+          this.currentAction = null;
+        }
+      }
+    };
 
     this.move = function(params) {
       var dx = params.dx || 0;

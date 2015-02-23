@@ -6,8 +6,8 @@ var Game = function(params) {
   var OPEN_TILE = 1;
 
 
-  var IS_DEBUG_SLOWDOWN_ON = true;
-  //var IS_DEBUG_SLOWDOWN_ON = false;
+  var IS_DEBUG_SLOWDOWN_ON = false;
+  //var IS_DEBUG_SLOWDOWN_ON = true;
 
   var DEBUG_SLOWDOWN_THRESHOLD = 0;
   // var DEBUG_SLOWDOWN_THRESHOLD = 50;
@@ -63,8 +63,6 @@ var Game = function(params) {
     this.player2.opponent = this.player1;
     this.opponent = this.player2;
 
-    // this.units = []; // TODO: this array doesn't actually hold anything, yet is referenced
-    this.traversals = {};
     this.selectedUnits = {};
 
     this.debugData = {};
@@ -82,21 +80,22 @@ var Game = function(params) {
       var path = astar.search(this.graph, unitNode, goalNode);
 
       if (path.length > 0) {
-        this.traversals[unit.id] = new Traversal({ game: this, unit: unit, path: path });
+        unit.currentAction = new Traversal({ game: this, unit: unit, path: path });
       }
     }, this);
   };
 
-  this.removeUnit = function(unitToRemove) {
-    var removalIndex = null;
-    for(var i=0; i < this.units.length; i++) {
-      var unit = this.units[i];
-      if (unit.id == unitToRemove.id) {
-        removalIndex = i;
-      }
-    }
-    this.units.splice(removalIndex, 1);
-  };
+  //// Not being used.. perhaps remove this soon
+  // this.removeUnit = function(unitToRemove) {
+  //   var removalIndex = null;
+  //   for(var i=0; i < this.units.length; i++) {
+  //     var unit = this.units[i];
+  //     if (unit.id == unitToRemove.id) {
+  //       removalIndex = i;
+  //     }
+  //   }
+  //   this.units.splice(removalIndex, 1);
+  // };
 
   this.selectUnitAt = function(coord) {
     var newlySelectedUnit = _.find(this.player1.units, function(unit) {
@@ -137,29 +136,27 @@ var Game = function(params) {
     timeDelta = lastTime ? (currTime - lastTime) : 0;
     lastTime = currTime;
 
-    if (IS_DEBUG_SLOWDOWN_ON || debug_time_counter > DEBUG_SLOWDOWN_THRESHOLD) {
+    if (!IS_DEBUG_SLOWDOWN_ON || debug_time_counter > DEBUG_SLOWDOWN_THRESHOLD) {
       debug_time_counter = 0;
 
       drawRect(0, 0, self.canvasWidth, self.canvasHeight, "#ddd", "#555", true); 
       self.renderSidePanel();
 
-      for(var unitId in self.traversals) {
-        var traversal = self.traversals[unitId];
-        traversal.tick(timeDelta);
+      // Update units
+      _.each(self.players, function(player) {
+        _.each(player.units, function(unit) { unit.update(timeDelta); });
+      });
 
-        if (traversal.isFinished) {
-          delete self.traversals[unitId];
-        }
-      }
-
+      /// Draw units
       _.each(self.players, function(player) {
         _.each(player.units, function(unit) { drawUnit(unit); });
       });
 
-      for(var unitId in self.selectedUnits) {
-        var unit = self.selectedUnits[unitId];
+
+      // Draw selected unit indicator
+      _.each(self.selectedUnits, function(unit) {
         drawUnitSelection(unit);
-      }
+      });
 
       var selectionRect = self.userInterface.selectionRect;
       if (selectionRect && selectionRect.width > 0 && selectionRect.height > 0) {
